@@ -1,15 +1,15 @@
 //Intial function
 "Use strict";
 
-var auth;
-var latestkey= 0;
-
 $('#sendmessage').click(function() {
-sendmessage();
+  sendmessage();
+});
+$('#refresh').click(function() {
+  getMessages();
 });
 
 //initialises and authorises with the network
-(function() {
+(function () {
   var app = {
     name: "Safe Chat",
     id: "joe",
@@ -31,17 +31,14 @@ sendmessage();
   window.safeApp.initialise(app)
     .then((appHandle) => {
       console.log("Initialise Token: " + appHandle);
-
-
       window.safeApp.authorise(appHandle, permissions, owncontainer)
-        .then((auth) => {
+        .then((authURI) => {
           // console.log(auth);
-
-          window.safeApp.connectAuthorised(appHandle, auth)
+          window.safeApp.connectAuthorised(appHandle, authURI)
             .then((authorisedAppHandle) => {
               //returns authorised app token
-              window.auth = authorisedAppHandle;
-              Materialize.toast("Authorised App Token: " + authorisedAppHandle, 3000, 'rounded');
+              auth = authorisedAppHandle;
+              Materialize.toast("Authorised App Token: " + auth, 3000, 'rounded');
               getMessages();
 
               // console.log(authorisedAppHandle);
@@ -53,27 +50,26 @@ sendmessage();
     });
 })();
 
-
-
 function getMessages() {
   var name = "safechat";
   window.safeCrypto.sha3Hash(auth, name)
     .then((hash) => {
-      window.safeMutableData.newPublic(auth, hash, 2000)
+      window.safeMutableData.newPublic(auth, hash, 3000)
         .then((mdHandle) => {
           window.safeMutableData.getEntries(mdHandle)
             .then((entriesHandle) => {
               messages.innerHTML = "";
-              var latestkey= 0;
               window.safeMutableDataEntries.forEach(entriesHandle,
                 (key, value) => {
                   console.log('Key: ', uintToString(key));
                   console.log('Value: ', uintToString(value.buf));
                   $("#messages").append('<div class="row"><div class="card-panel yellow"><span class="blue-text">' + uintToString(value.buf) + '</span></div></div>');
-                  window.latestkey++;
                 });
             });
         });
+    }, (err) => {
+      console.error(err);
+      // Materialize.toast(err, 3000, 'rounded');
     });
 }
 
@@ -81,16 +77,18 @@ function sendmessage() {
   var name = "safechat";
   window.safeCrypto.sha3Hash(auth, name)
     .then((hash) => {
-      window.safeMutableData.newPublic(auth, hash, 2000)
+      window.safeMutableData.newPublic(auth, hash, 3000)
         .then((mdHandle) => {
           window.safeMutableData.newMutation(auth)
             .then((mutationHandle) => {
-              window.safeMutableDataMutation.insert(mutationHandle, latestkey.toString(), textarea.value)
+              var date = new Date();
+              var time = date.getTime();
+              window.safeMutableDataMutation.insert(mutationHandle, time.toString(), textarea.value)
                 .then(_ =>
                   window.safeMutableData.applyEntriesMutation(mdHandle, mutationHandle))
                 .then(_ =>
-                  console.log('New entry was inserted in the MutableData and committed to the network'));
-                  getMessages();
+                  Materialize.toast('Message has been sent to the network, you might need to click the refresh button to see it', 3000, 'rounded'));
+              getMessages();
             });
         });
     });

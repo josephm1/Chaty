@@ -13,6 +13,11 @@ h1, h3 {
   font-style: normal;
 }
 
+.messages {
+overflow: auto ;
+display: inline-block;
+}
+
 .sendmessage {
   position: fixed;
   bottom: 0;
@@ -26,6 +31,15 @@ h1, h3 {
   width: 90% !important;
   margin-left: 12px !important;
   margin-right: 12px !important;
+}
+
+.refresh {
+  cursor:pointer;
+  position: fixed;
+  right: 0;
+  top: 0px;
+  margin: 0;
+  padding: 5px;
 }
 
 .sendicon {
@@ -53,6 +67,7 @@ h1, h3 {
 
 center {
   padding: 15px;
+  margin-bottom: 80px;
 }
 
 
