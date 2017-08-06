@@ -1,5 +1,5 @@
 
-//This was the code I used to set up the immutable data and allow entries to be inserted
+//This was the code I used to set up the mutable data and allow entries to be inserted
 // This does not needed to be included in the websites so I
 
 var name = "safechat";
