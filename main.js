@@ -9,7 +9,7 @@ $('#refresh').click(function() {
 });
 
 //initialises and authorises with the network
-(function () {
+ (function() {
   var app = {
     name: "Safe Chat",
     id: "joe",
@@ -64,6 +64,7 @@ function getMessages() {
                   console.log('Key: ', uintToString(key));
                   console.log('Value: ', uintToString(value.buf));
                   $("#messages").append('<div class="row"><div class="card-panel yellow"><span class="blue-text">' + uintToString(value.buf) + '</span></div></div>');
+                    window.scrollTo(0,document.body.scrollHeight);
                 });
             });
         });
@@ -88,6 +89,7 @@ function sendmessage() {
                   window.safeMutableData.applyEntriesMutation(mdHandle, mutationHandle))
                 .then(_ =>
                   Materialize.toast('Message has been sent to the network, you might need to click the refresh button to see it', 3000, 'rounded'));
+              textarea.value = "";
               getMessages();
             });
         });
@@ -95,5 +97,10 @@ function sendmessage() {
 }
 
 function uintToString(uintArray) {
-  return new TextDecoder("utf-8").decode(uintArray);
+  return new TextDecoder("utf-8").decode(uintArray)
+          .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
 }
