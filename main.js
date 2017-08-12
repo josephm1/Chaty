@@ -36,9 +36,9 @@ $('#refresh').click(function() {
 })();
 
 function authorise() {
-  if (authorised === false){
-  window.safeApp.free(auth);
-  auth = "";
+  if (authorised === false) {
+    window.safeApp.free(auth);
+    auth = "";
     var app = {
       name: "Safe Chat",
       id: "joe",
@@ -48,19 +48,14 @@ function authorise() {
 
     var permissions = {
       '_public': [
-        'Read',
-        'Insert'
+        'Read'
       ]
-    };
-
-    var owncontainer = {
-      own_container: true
     };
 
     window.safeApp.initialise(app)
       .then((appHandle) => {
         console.log("Initialise Token: " + appHandle);
-        window.safeApp.authorise(appHandle, permissions, owncontainer)
+        window.safeApp.authorise(appHandle, permissions)
           .then((authURI) => {
             // console.log(auth);
             window.safeApp.connectAuthorised(appHandle, authURI)
@@ -77,10 +72,10 @@ function authorise() {
         console.error(err);
         Materialize.toast(err, 3000, 'rounded');
       });
-    } else {
-      sendMessage();
-    }
+  } else {
+    sendMessage();
   }
+}
 
 function getMutableDataHandle() {
   var name = "safechat";
@@ -99,11 +94,16 @@ function getMessages() {
       messages.innerHTML = "";
       window.safeMutableDataEntries.forEach(entriesHandle,
         (key, value) => {
+
           console.log('Key: ', uintToString(key));
           console.log('Value: ', uintToString(value.buf));
-          $("#messages").append('<div class="row"><div class="card-panel yellow"><span class="blue-text">' + uintToString(value.buf) + '</span></div></div>');
+
+          if (uintToString(value.buf).length < 300 && uintToString(key).charAt(0) == 1 &&  uintToString(value.buf) !== "") {
+            $("#messages").append('<div class="row"><div class="card-panel yellow"><span class="blue-text">' + uintToString(value.buf) + '</span></div></div>');
+          }
           window.scrollTo(0, document.body.scrollHeight);
         });
+        window.safeMutableDataEntries.free(entriesHandle);
     }, (err) => {
       console.error(err);
       // Materialize.toast(err, 3000, 'rounded');
@@ -120,6 +120,7 @@ function sendMessage() {
           window.safeMutableData.applyEntriesMutation(mdHandle, mutationHandle))
         .then(_ => {
           Materialize.toast('Message has been sent to the network', 3000, 'rounded');
+          window.safeMutableDataMutation.free(mutationHandle);
           getMessages();
         });
       textarea.value = "";
@@ -134,4 +135,5 @@ function uintToString(uintArray) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+
 }
