@@ -92,18 +92,23 @@ function getMessages() {
   window.safeMutableData.getEntries(mdHandle)
     .then((entriesHandle) => {
       messages.innerHTML = "";
+      var date = new Date();
+      var time = date.getTime();
       window.safeMutableDataEntries.forEach(entriesHandle,
         (key, value) => {
 
-          console.log('Key: ', uintToString(key));
-          console.log('Value: ', uintToString(value.buf));
+          if (uintToString(value.buf).length < 300 && uintToString(value.buf) !== "" &&
+            parseInt(uintToString(key)) < time && uintToString(key).length === 13 && uintToString(key).substring(0, 4) == 1502) {
 
-          if (uintToString(value.buf).length < 300 && uintToString(key).charAt(0) == 1 &&  uintToString(value.buf) !== "") {
-            $("#messages").append('<div class="row"><div class="card-panel yellow"><span class="blue-text">' + uintToString(value.buf) + '</span></div></div>');
+            console.log('Key: ', uintToString(key));
+            console.log('Value: ', uintToString(value.buf));
+            $("#messages").append('<div class="row"><div class="card-panel yellow"><span class="blue-text">' + uintToString(value.buf) +
+              '</span></div></div>');
+
           }
           window.scrollTo(0, document.body.scrollHeight);
         });
-        window.safeMutableDataEntries.free(entriesHandle);
+      window.safeMutableDataEntries.free(entriesHandle);
     }, (err) => {
       console.error(err);
       // Materialize.toast(err, 3000, 'rounded');
