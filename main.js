@@ -1,15 +1,15 @@
 //Intial function
 "Use strict";
 
-$('#sendmessage').click(function() {
-  authorise();
-});
-$('#refresh').click(function() {
-  getMessages();
-});
+$(document).ready(function() {
+  $('#sendmessage').click(function() {
+    authorise();
+  });
+  $('#refresh').click(function() {
+    getMutableDataHandle("getMessages");
+  });
 
-//initialises and authorises with the network
-(function() {
+  //initialises and authorises with the network
   var app = {
     name: "Safe Chat",
     id: "joe",
@@ -27,13 +27,70 @@ $('#refresh').click(function() {
           auth = appHandle;
           authorised = false;
           Materialize.toast(" App Token: " + auth, 3000, 'rounded');
-          getMutableDataHandle();
+          getMutableDataHandle("getMessages");
         });
     }, (err) => {
       console.error(err);
       Materialize.toast(err, 3000, 'rounded');
     });
-})();
+});
+
+function getMutableDataHandle(invokeFun) {
+  var name = "safechat";
+  window.safeCrypto.sha3Hash(auth, name)
+    .then((hash) =>
+      window.safeMutableData.newPublic(auth, hash, 3000))
+    .then((safeChatHandle) => {
+      mdHandle = safeChatHandle;
+      if (invokeFun === "getMessages") {
+        getMessages();
+      } else {
+        sendMessage();
+      }
+    });
+}
+
+function uintToString(uintArray) {
+  return new TextDecoder("utf-8").decode(uintArray)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+function getMessages() {
+  window.safeMutableData.getEntries(mdHandle)
+    .then((entriesHandle) => {
+      messages.innerHTML = "";
+      var date = new Date();
+      var time = date.getTime();
+      window.safeMutableDataEntries.forEach(entriesHandle,
+        (key, value) => {
+
+          if (uintToString(value.buf).length < 300 &&
+            uintToString(value.buf) !== "" &&
+            parseInt(uintToString(key)) < time &&
+            parseInt(uintToString(key)).toString().length === 13 &&
+            uintToString(key).length === 13 &&
+            uintToString(key).substring(0, 3) == 150) {
+
+            console.log('Key: ', uintToString(key));
+            console.log('Value: ', uintToString(value.buf));
+            $("#messages").append('<div class="row"><div class="card-panel yellow"><span class="blue-text">' + uintToString(value.buf) +
+              '</span></div></div>');
+
+          }
+          window.scrollTo(0, document.body.scrollHeight);
+        });
+      window.safeMutableDataEntries.free(entriesHandle);
+      window.safeMutableData.free(mdHandle);
+    }, (err) => {
+      console.error(err);
+      // Materialize.toast(err, 3000, 'rounded');
+    });
+}
 
 function authorise() {
   if (authorised === false) {
@@ -47,9 +104,7 @@ function authorise() {
     };
 
     var permissions = {
-      '_public': [
-        'Read'
-      ]
+      '_public': []
     };
 
     window.safeApp.initialise(app)
@@ -65,7 +120,6 @@ function authorise() {
                 authorised = true;
                 Materialize.toast("Authorised App Token: " + auth, 3000, 'rounded');
                 getMutableDataHandle();
-                sendMessage();
               });
           });
       }, (err) => {
@@ -73,46 +127,8 @@ function authorise() {
         Materialize.toast(err, 3000, 'rounded');
       });
   } else {
-    sendMessage();
+    getMutableDataHandle();
   }
-}
-
-function getMutableDataHandle() {
-  var name = "safechat";
-  window.safeCrypto.sha3Hash(auth, name)
-    .then((hash) =>
-      window.safeMutableData.newPublic(auth, hash, 3000))
-    .then((safeChatHandle) => {
-      mdHandle = safeChatHandle;
-      getMessages();
-    });
-}
-
-function getMessages() {
-  window.safeMutableData.getEntries(mdHandle)
-    .then((entriesHandle) => {
-      messages.innerHTML = "";
-      var date = new Date();
-      var time = date.getTime();
-      window.safeMutableDataEntries.forEach(entriesHandle,
-        (key, value) => {
-
-          if (uintToString(value.buf).length < 300 && uintToString(value.buf) !== "" &&
-            parseInt(uintToString(key)) < time && uintToString(key).length === 13 && uintToString(key).substring(0, 4) == 1502) {
-
-            console.log('Key: ', uintToString(key));
-            console.log('Value: ', uintToString(value.buf));
-            $("#messages").append('<div class="row"><div class="card-panel yellow"><span class="blue-text">' + uintToString(value.buf) +
-              '</span></div></div>');
-
-          }
-          window.scrollTo(0, document.body.scrollHeight);
-        });
-      window.safeMutableDataEntries.free(entriesHandle);
-    }, (err) => {
-      console.error(err);
-      // Materialize.toast(err, 3000, 'rounded');
-    });
 }
 
 function sendMessage() {
@@ -126,19 +142,9 @@ function sendMessage() {
         .then(_ => {
           Materialize.toast('Message has been sent to the network', 3000, 'rounded');
           window.safeMutableDataMutation.free(mutationHandle);
-          getMessages();
+          getMutableDataHandle("getMessages");
         });
       textarea.value = "";
 
     });
-}
-
-function uintToString(uintArray) {
-  return new TextDecoder("utf-8").decode(uintArray)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
 }
