@@ -73,8 +73,7 @@ function getMessages() {
             uintToString(value.buf) !== "" &&
             parseInt(uintToString(key)) < time &&
             parseInt(uintToString(key)).toString().length === 13 &&
-            uintToString(key).length === 13 &&
-            uintToString(key).substring(0, 3) == 150) {
+            uintToString(key).length === 13 ) {
 
             console.log('Key: ', uintToString(key));
             console.log('Value: ', uintToString(value.buf));
