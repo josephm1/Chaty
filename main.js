@@ -11,7 +11,7 @@ $(document).ready(function() {
 
   //initialises and authorises with the network
   var app = {
-    name: "Safe Chat",
+    name: "Chaty",
     id: "joe",
     version: "1",
     vendor: "joe",
@@ -36,12 +36,12 @@ $(document).ready(function() {
 });
 
 function getMutableDataHandle(invokeFun) {
-  var name = "safechat";
+  var name = "chaty";
   window.safeCrypto.sha3Hash(auth, name)
     .then((hash) =>
-      window.safeMutableData.newPublic(auth, hash, 3000))
-    .then((safeChatHandle) => {
-      mdHandle = safeChatHandle;
+      window.safeMutableData.newPublic(auth, hash, 54321))
+    .then((chatyHandle) => {
+      mdHandle = chatyHandle;
       if (invokeFun === "getMessages") {
         getMessages();
       } else {
@@ -96,7 +96,7 @@ function authorise() {
     window.safeApp.free(auth);
     auth = "";
     var app = {
-      name: "Safe Chat",
+      name: "Chaty",
       id: "joe",
       version: "1",
       vendor: "joe",
