@@ -14,7 +14,7 @@ $(document).ready(function() {
     name: "Chaty",
     id: "joe",
     version: "1",
-    vendor: "joe",
+    vendor: "chaty.joe",
   };
 
 
@@ -99,7 +99,7 @@ function authorise() {
       name: "Chaty",
       id: "joe",
       version: "1",
-      vendor: "joe",
+      vendor: "chaty.joe",
     };
 
     var permissions = {
