@@ -1,5 +1,7 @@
 //Intial function
+/*jshint esversion: 6 */
 "Use strict";
+
 
 $(document).ready(function() {
   $('#sendmessage').click(function() {
@@ -73,7 +75,7 @@ function getMessages() {
             uintToString(value.buf) !== "" &&
             parseInt(uintToString(key)) < time &&
             parseInt(uintToString(key)).toString().length === 13 &&
-            uintToString(key).length === 13 ) {
+            uintToString(key).length === 13) {
 
             console.log('Key: ', uintToString(key));
             console.log('Value: ', uintToString(value.buf));
