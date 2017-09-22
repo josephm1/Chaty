@@ -1,55 +1,117 @@
 //Intial function
-/*jshint esversion: 6 */
 "Use strict";
-
-
-$(document).ready(function() {
-  $('#sendmessage').click(function() {
-    authorise();
-  });
-  $('#refresh').click(function() {
-    getMutableDataHandle("getMessages");
-  });
-
-  //initialises and authorises with the network
-  var app = {
-    name: "Chaty",
-    id: "joe",
-    version: "1",
-    vendor: "chaty.joe",
-  };
-
-
-  window.safeApp.initialise(app)
-    .then((appHandle) => {
-      console.log("Initialise Token: " + appHandle);
-      window.safeApp.connect(appHandle)
-        .then((appHandle) => {
-          //returns app token
-          auth = appHandle;
-          authorised = false;
-          Materialize.toast(" App Token: " + auth, 3000, 'rounded');
-          getMutableDataHandle("getMessages");
-        });
-    }, (err) => {
-      console.error(err);
-      Materialize.toast(err, 3000, 'rounded');
+(async function() {
+  try {
+    $('#sendmessage').click(function() {
+      authorise();
     });
-});
+    $('#refresh').click(function() {
+      getMessages();
+    });
 
-function getMutableDataHandle(invokeFun) {
-  var name = "chaty";
-  window.safeCrypto.sha3Hash(auth, name)
-    .then((hash) =>
-      window.safeMutableData.newPublic(auth, hash, 54321))
-    .then((chatyHandle) => {
-      mdHandle = chatyHandle;
-      if (invokeFun === "getMessages") {
-        getMessages();
-      } else {
-        sendMessage();
+    const app = {
+      name: "Chaty",
+      id: "joe",
+      version: "1",
+      vendor: "chaty.joe",
+    };
+
+    let appHandle = await window.safeApp.initialise(app);
+    auth = await window.safeApp.connect(appHandle);
+
+    Materialize.toast(" App Token: " + auth, 3000, 'rounded');
+    authorised = false;
+    getMessages();
+
+  } catch (err) {
+    console.log(err);
+  }
+})();
+
+async function getMessages() {
+  let chatyHash = await window.safeCrypto.sha3Hash(auth, "chaty");
+  let chatyHandle = await window.safeMutableData.newPublic(auth, chatyHash, 54321);
+  let entriesHandle = await window.safeMutableData.getEntries(chatyHandle);
+
+  messages.innerHTML = "";
+  let time = new Date().getTime();
+
+  window.safeMutableDataEntries.forEach(entriesHandle,
+    (key, value) => {
+
+      if (uintToString(value.buf).length < 300 &&
+        uintToString(value.buf) !== "" &&
+        parseInt(uintToString(key)) < time &&
+        parseInt(uintToString(key)).toString().length === 13 &&
+        uintToString(key).length === 13) {
+
+        console.log('Key: ', uintToString(key));
+        console.log('Value: ', uintToString(value.buf));
+        $("#messages").append('<div class="row"><div class="card-panel yellow"><span class="blue-text">' +
+          uintToString(value.buf) +
+          '</span></div></div>');
       }
+      window.scrollTo(0, document.body.scrollHeight);
+    }, (err) => {
+      console.error(err)
     });
+  window.safeMutableDataEntries.free(entriesHandle);
+  window.safeMutableData.free(chatyHandle);
+}
+
+
+async function authorise() {
+  try {
+    if (authorised === false) {
+      window.safeApp.free(auth);
+
+      auth = "";
+      const app = {
+        name: "Chaty",
+        id: "joe",
+        version: "1",
+        vendor: "chaty.joe",
+      };
+      const permissions = {
+        '_public': ['Read']
+      };
+
+      let appHandle = await window.safeApp.initialise(app);
+      let authURI = await window.safeApp.authorise(appHandle, permissions);
+      let authorisedAppHandle = await window.safeApp.connectAuthorised(appHandle, authURI);
+
+      auth = authorisedAppHandle;
+      authorised = true;
+      Materialize.toast("Authorised App Token: " + auth, 3000, 'rounded');
+      sendMessage();
+    } else {
+      sendMessage();
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function sendMessage() {
+  try {
+    let time = new Date().getTime().toString();
+
+    let chatyHash = await window.safeCrypto.sha3Hash(auth, "chaty");
+    let chatyHandle = await window.safeMutableData.newPublic(auth, chatyHash, 54321);
+    let mutationHandle = await window.safeMutableData.newMutation(auth);
+    await window.safeMutableDataMutation.insert(mutationHandle, time, textarea.value);
+    await window.safeMutableData.applyEntriesMutation(chatyHandle, mutationHandle);
+
+    Materialize.toast('Message has been sent to the network', 3000, 'rounded');
+    window.safeMutableDataMutation.free(mutationHandle);
+    window.safeMutableData.free(chatyHandle);
+
+    getMessages();
+
+    textarea.value = '';
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 function uintToString(uintArray) {
@@ -60,92 +122,4 @@ function uintToString(uintArray) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 
-}
-
-function getMessages() {
-  window.safeMutableData.getEntries(mdHandle)
-    .then((entriesHandle) => {
-      messages.innerHTML = "";
-      var date = new Date();
-      var time = date.getTime();
-      window.safeMutableDataEntries.forEach(entriesHandle,
-        (key, value) => {
-
-          if (uintToString(value.buf).length < 300 &&
-            uintToString(value.buf) !== "" &&
-            parseInt(uintToString(key)) < time &&
-            parseInt(uintToString(key)).toString().length === 13 &&
-            uintToString(key).length === 13) {
-
-            console.log('Key: ', uintToString(key));
-            console.log('Value: ', uintToString(value.buf));
-            $("#messages").append('<div class="row"><div class="card-panel yellow"><span class="blue-text">' + uintToString(value.buf) +
-              '</span></div></div>');
-
-          }
-          window.scrollTo(0, document.body.scrollHeight);
-        });
-      window.safeMutableDataEntries.free(entriesHandle);
-      window.safeMutableData.free(mdHandle);
-    }, (err) => {
-      console.error(err);
-      // Materialize.toast(err, 3000, 'rounded');
-    });
-}
-
-function authorise() {
-  if (authorised === false) {
-    window.safeApp.free(auth);
-    auth = "";
-    var app = {
-      name: "Chaty",
-      id: "joe",
-      version: "1",
-      vendor: "chaty.joe",
-    };
-
-    var permissions = {
-      '_public': ['Read']
-    };
-
-    window.safeApp.initialise(app)
-      .then((appHandle) => {
-        console.log("Initialise Token: " + appHandle);
-        window.safeApp.authorise(appHandle, permissions)
-          .then((authURI) => {
-            // console.log(auth);
-            window.safeApp.connectAuthorised(appHandle, authURI)
-              .then((authorisedAppHandle) => {
-                //returns authorised app token
-                auth = authorisedAppHandle;
-                authorised = true;
-                Materialize.toast("Authorised App Token: " + auth, 3000, 'rounded');
-                getMutableDataHandle();
-              });
-          });
-      }, (err) => {
-        console.error(err);
-        Materialize.toast(err, 3000, 'rounded');
-      });
-  } else {
-    getMutableDataHandle();
-  }
-}
-
-function sendMessage() {
-  window.safeMutableData.newMutation(auth)
-    .then((mutationHandle) => {
-      var date = new Date();
-      var time = date.getTime();
-      window.safeMutableDataMutation.insert(mutationHandle, time.toString(), textarea.value)
-        .then(_ =>
-          window.safeMutableData.applyEntriesMutation(mdHandle, mutationHandle))
-        .then(_ => {
-          Materialize.toast('Message has been sent to the network', 3000, 'rounded');
-          window.safeMutableDataMutation.free(mutationHandle);
-          getMutableDataHandle("getMessages");
-        });
-      textarea.value = "";
-
-    });
 }
