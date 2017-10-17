@@ -2,7 +2,24 @@
 'Use strict';
 (async function() {
 	try {
-		$('#sendmessage').click(function() {
+		$('.dropdown').dropdown();
+		$('#feedbackmodal').modal();
+		$('#aboutmodal').modal();
+		$('#settingsmodal').modal();
+
+		$('#feedback').click(function() {
+			$('#feedbackmodal').modal('open');
+		});
+		$('#submit-feedback').click(function() {
+			sendFeedback();
+		});
+		$('#about').click(function() {
+			$('#aboutmodal').modal('open');
+		});
+		$('#settings').click(function() {
+			$('#settingsmodal').modal('open');
+		});
+		$('#send-message').click(function() {
 			authorise();
 		});
 		$('#refresh').click(function() {
@@ -32,6 +49,7 @@ async function getMessages() {
 	let chatyHandle = await window.safeMutableData.newPublic(auth, chatyHash, 54321);
 	let entriesHandle = await window.safeMutableData.getEntries(chatyHandle);
 
+	loadingMessage.innerHTML = '';
 	messages.innerHTML = '';
 	let time = new Date().getTime();
 
@@ -47,10 +65,25 @@ async function getMessages() {
 			) {
 				console.log('Key: ', uintToString(key));
 				console.log('Value: ', uintToString(value.buf));
+
+				let date = new Date(parseInt(uintToString(key)));
+				let timestamp =
+					('0' + date.getDate()).slice(-2) +
+					'/' +
+					('0' + (date.getMonth() + 1)).slice(-2) +
+					'/' +
+					date.getFullYear() +
+					' ' +
+					('0' + date.getHours()).slice(-2) +
+					':' +
+					('0' + date.getMinutes()).slice(-2);
+
 				$('#messages').append(
-					'<div class="row"><div class="card-panel yellow"><span class="blue-text">' +
+					'<div class="card-panel accent-colour item"><p class="primary-text-colour">' +
 						uintToString(value.buf) +
-						'</span></div></div>'
+						' <br>' +
+						timestamp +
+						'</p></div>'
 				);
 			}
 			window.scrollTo(0, document.body.scrollHeight);
@@ -102,8 +135,8 @@ async function sendMessage() {
 		let chatyHash = await window.safeCrypto.sha3Hash(auth, 'chaty');
 		let chatyHandle = await window.safeMutableData.newPublic(auth, chatyHash, 54321);
 		let mutationHandle = await window.safeMutableData.newMutation(auth);
-		await window.safeMutableDataMutation.insert(mutationHandle, time, textarea.value);
-		await window.safeMutableData.applyEntriesMutation(chatyHandle, mutationHandle);
+		window.safeMutableDataMutation.insert(mutationHandle, time, messagearea.value);
+		window.safeMutableData.applyEntriesMutation(chatyHandle, mutationHandle);
 
 		Materialize.toast('Message has been sent to the network', 3000, 'rounded');
 		window.safeMutableDataMutation.free(mutationHandle);
@@ -111,7 +144,26 @@ async function sendMessage() {
 
 		getMessages();
 
-		textarea.value = '';
+		messagearea.value = '';
+	} catch (err) {
+		console.log(err);
+	}
+}
+
+async function sendFeedback() {
+	try {
+		let time = new Date().getTime().toString();
+		let feedback = 'Chaty Feedback: ' + feedbackarea.value + '/ Score: ' + chatyscore.value.toString() + '/10';
+
+		let feedbackHash = await window.safeCrypto.sha3Hash(auth, 'feedback');
+		let feedbackHandle = await window.safeMutableData.newPublic(auth, feedbackHash, 54321);
+		let mutationHandle = await window.safeMutableData.newMutation(auth);
+		window.safeMutableDataMutation.insert(mutationHandle, time, feedback);
+		window.safeMutableData.applyEntriesMutation(feedbackHandle, mutationHandle);
+
+		Materialize.toast('Thanks for your feedback!', 3000, 'rounded');
+		window.safeMutableDataMutation.free(mutationHandle);
+		window.safeMutableData.free(feedbackHandle);
 	} catch (err) {
 		console.log(err);
 	}

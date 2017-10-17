@@ -20,26 +20,95 @@
 </head>
 
 <body>
+	<div class="navbar-fixed">
+		<nav>
+			<div class="nav-wrapper dark-primary-colour">
+				<a class="brand-logo center accent-text-colour">Chaty</a>
+				<ul id="nav-mobile" class="right">
+					<li><a class="dropdown" data-activates="more"><i class="material-icons accent-text-colour">more_vert</i></a></li>
+				</ul>
+			</div>
+		</nav>
+	</div>
 
-	<h1>Chaty</h1>
-
-	<i id="refresh" class="material-icons md-48 refresh ">refresh</i>
 
 	<main>
 		<div class="container">
-			<center>
-				<div id="messages" class="messages">
-					<p>It takes a little while to load, good things come to those who wait.</p>
+			<ul id="more" class="dropdown-content accent-colour">
+				<li><a id="refresh" class="primary-text-colour">Refresh</a></li>
+				<li><a id="feedback" class="primary-text-colour">Feedback</a></li>
+				<li><a id="about" class="primary-text-colour">About</a></li>
+				<li><a id="settings" class="primary-text-colour">Settings</a></li>
+			</ul>
+
+			<!-- feedback modal -->
+			<div id="feedbackmodal" class="modal primary-colour">
+				<div class="modal-content">
+					<form>
+						<center>
+							<h5>Feedback</h5>
+						</center>
+						<p>Please send criticism, bugs or improvements!</p>
+						<textarea id="feedbackarea" class="materialize-textarea"></textarea>
+						<p>How would you rate this out of 10?</p>
+						<p class="range-field">
+							<input type="range" id="chatyscore" min="0" class="accent-text-colour" max="10" />
+						</p>
+					</form>
 				</div>
-			</center>
+				<div class="modal-footer dark-primary-colour">
+					<a id="submit-feedback" class="modal-action waves-effect waves-light btn-flat accent-text-colour">Submit</a>
+				</div>
+			</div>
+
+			<!-- about modal -->
+			<div id="aboutmodal" class="modal primary-colour">
+				<div class="modal-content">
+					<h4 class="center">About</h4>
+					<p>
+						A messaging website built on the SAFE Network with the ability to publish messages and chat in realtime in-browser. The code is designed to readable and showcase some of the features of the SAFE API.
+						<br>
+						<br> Chaty uses MaterializeCSS and jQuery under the MIT license.
+						<br>
+						<br> Part of Joseph's SAFE Project. Check out the topic for this project on the SAFE Network forums {here}.
+						<br>
+						<br> Check out some of my other projects: Demoy, Chaty, Listy and SAFE API Overview. If you like this feel free to send MaidSafecoins to this address: 1Dksk7aA6PPpttznZi73d8xzsw4ERHSTLc
+						<br>
+						<br>
+						<center>
+							By Joseph Meagher
+						</center>
+					</p>
+				</div>
+			</div>
+
+			<!-- settings modal -->
+			<div id="settingsmodal" class="modal primary-colour">
+				<div class="modal-content">
+					<center>
+						<h5>Settings</h5>
+						<p>
+							Nothing here yet!
+						</p>
+					</center>
+				</div>
+			</div>
+
+			<div id="loadingMessage">
+				<center>
+					<p>It takes a little while to load, good things come to those who wait.</p>
+				</center>
+			</div>
+			<div id="messages" class="masonry">
+			</div>
 		</div>
 	</main>
 
-	<footer class="page-footer blue-bg">
+	<footer class="page-footer send-footer">
 		<div class="container">
 			<div class="input-field row msg">
-				<textarea id="textarea" class="msgarea materialize-textarea col s10" placeholder="Enter your message here then click send" data-length="300"></textarea>
-				<i id="sendmessage" class="material-icons md-48 sendicon col s2">send</i>
+				<textarea id="messagearea" class="materialize-textarea col s10" placeholder="Enter your message here then click send" data-length="300"></textarea>
+				<i id="send-message" class="material-icons md-48 sendicon col s2">send</i>
 			</div>
 			<p class="credit">By Joseph Meagher</p>
 		</div>

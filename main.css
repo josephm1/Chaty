@@ -1,99 +1,168 @@
+:root {
+	--primaryColor: #448aff;
+	--darkPrimaryColor: #1565c0;
+	--accentColor: #ffea00;
+}
+
 body {
-  color: yellow;
-  background-color: #5792CC;
-  background-repeat: no-repeat;
-  background-size: cover;
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
+	color: var(--accentColor);
+	background-color: var(--primaryColor);
+	background-repeat: no-repeat;
+	background-size: cover;
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
 }
 
 main {
-  flex: 1 0 auto;
+	flex: 1 0 auto;
 }
 
-h1, h3 {
-  text-align: center;
-  color: yellow;
-  font-family: Arial;
-  font-style: normal;
-  line-height: 70px;
+.accent-text-colour {
+	color: var(--accentColor) !important;
+}
+.primary-text-colour {
+	color: var(--primaryColor) !important;
 }
 
-.refresh {
-  position: fixed;
-  top: 0;
-  right: 0;
-  margin: 0;
-  padding: 5px;
-  cursor: pointer;
+.primary-colour {
+	background-color: var(--primaryColor) !important;
 }
 
-.blue-bg {
-  color: yellow;
-  background-color: #283593;
+.dark-primary-colour {
+	background-color: var(--darkPrimaryColor) !important;
+}
+
+.accent-colour {
+	background-color: var(--accentColor) !important;
+}
+
+.send-footer {
+	color: var(--accentColor);
+	background-color: var(--darkPrimaryColor);
 }
 
 .sendicon {
-  position: absolute;
-  top: 50%;
-  right: -48px;
-  margin-top: -36px;
-  cursor: pointer;
+	position: absolute;
+	top: 50%;
+	right: -48px;
+	margin-top: -36px;
+	cursor: pointer;
 }
 
 .credit {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  padding-right: 5px;
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	padding-right: 5px;
 }
 
-input:focus, #textarea:focus {
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: yellow !important;
-  box-shadow: yellow !important;
+textarea:focus {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--accentColor) !important;
+	box-shadow: var(--accentColor) !important;
 }
 
+/*input range styles */
+input[type='range'] {
+	border: 0 !important;
+}
+
+input[type='range'] + .thumb {
+	background-color: var(--accentColor) !important;
+}
+
+input[type='range'] + .thumb .value {
+	color: var(--accentColor);
+}
+
+input[type='range'] + .thumb.active .value {
+	color: var(--primaryColor);
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+	background-color: var(--darkPrimaryColor) !important;
+}
+
+input[type='range']::-webkit-slider-thumb {
+	background-color: var(--accentColor);
+}
+/*Masonry for webcards*/
+
+.masonry {
+	margin: 20px;
+	column-gap: 1em;
+}
+
+.item {
+	background-color: #eee;
+	display: inline-block;
+	margin: 0 0 1em;
+	width: 100%;
+}
+
+@media only screen and (min-width: 400px) {
+	.masonry {
+		-moz-column-count: 2;
+		-webkit-column-count: 2;
+		column-count: 2;
+	}
+}
+
+@media only screen and (min-width: 700px) {
+	.masonry {
+		-moz-column-count: 3;
+		-webkit-column-count: 3;
+		column-count: 3;
+	}
+}
+
+@media only screen and (min-width: 900px) {
+	.masonry {
+		-moz-column-count: 4;
+		-webkit-column-count: 4;
+		column-count: 4;
+	}
+}
 
 /* fallback */
 
 @font-face {
-  font-family: 'Material Icons';
-  font-weight: 400;
-  font-style: normal;
-  src: url(./fonts/icons.woff2) format('woff2');
+	font-family: 'Material Icons';
+	font-weight: 400;
+	font-style: normal;
+	src: url(./fonts/icons.woff2) format('woff2');
 }
 
 .material-icons {
-  display: inline-block;
-  white-space: nowrap;
-  letter-spacing: normal;
-  text-transform: none;
-  word-wrap: normal;
-  font-family: 'Material Icons';
-  font-size: 24px;
-  font-weight: normal;
-  font-style: normal;
-  line-height: 1;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
+	display: inline-block;
+	white-space: nowrap;
+	letter-spacing: normal;
+	text-transform: none;
+	word-wrap: normal;
+	font-family: 'Material Icons';
+	font-size: 24px;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 1;
+	direction: ltr;
+	-webkit-font-feature-settings: 'liga';
+	-webkit-font-smoothing: antialiased;
 }
 
 .material-icons.md-18 {
-  font-size: 18px;
+	font-size: 18px;
 }
 
 .material-icons.md-24 {
-  font-size: 24px;
+	font-size: 24px;
 }
 
 .material-icons.md-36 {
-  font-size: 36px;
+	font-size: 36px;
 }
 
 .material-icons.md-48 {
-  font-size: 48px;
+	font-size: 48px;
 }
