@@ -35,6 +35,7 @@
 	<main>
 		<div class="container">
 			<ul id="more" class="dropdown-content accent-colour">
+				<li><a id="authorise" class="primary-text-colour">Authorise</a></li>
 				<li><a id="refresh" class="primary-text-colour">Refresh</a></li>
 				<li><a id="feedback" class="primary-text-colour">Feedback</a></li>
 				<li><a id="about" class="primary-text-colour">About</a></li>
@@ -87,10 +88,41 @@
 				<div class="modal-content">
 					<center>
 						<h5>Settings</h5>
-						<p>
-							Nothing here yet!
-						</p>
+
+						<div id="settings-values">
+
+							<div class="row">
+								<div class="input-field col s12">
+									<p>
+										Please select your primary colour:
+									</p>
+									<input type="color" id="user-primary-colour" value="#448aff">
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="input-field col s12">
+									<p>
+										Please select your dark primary colour:
+									</p>
+									<input type="color" id="user-dark-primary-colour" value="#1565c0">
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="input-field col s12">
+									<p>
+										Please select your secondary colour:
+									</p>
+									<input type="color" id="user-accent-colour" value="#ffea00">
+								</div>
+							</div>
+						</div>
+						
 					</center>
+				</div>
+				<div class="modal-footer dark-primary-colour">
+					<a id="edit-config" class="modal-action waves-effect waves-light btn-flat accent-text-colour">Submit</a>
 				</div>
 			</div>
 
