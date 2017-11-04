@@ -84,7 +84,7 @@ async function getMessages() {
 						('0' + date.getMinutes()).slice(-2);
 
 					$('#messages').append(
-						'<div class="card-panel accent-colour item"><p class="primary-text-colour">' +
+						'<div class="card-panel dark-primary-colour item"><p class="accent-text-colour">' +
 							uintToString(value.buf) +
 							' <br>' +
 							timestamp +

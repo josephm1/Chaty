@@ -21,6 +21,7 @@ main {
 .accent-text-colour {
 	color: var(--accentColor) !important;
 }
+
 .primary-text-colour {
 	color: var(--primaryColor) !important;
 }
@@ -57,6 +58,11 @@ main {
 	padding-right: 5px;
 }
 
+a:link {
+	color: var(--accentColor);
+	text-decoration: underline;
+}
+
 textarea:focus {
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
@@ -64,7 +70,8 @@ textarea:focus {
 	box-shadow: var(--accentColor) !important;
 }
 
-/*input range styles */
+/* input range styles */
+
 input[type='range'] {
 	border: 0 !important;
 }
@@ -88,6 +95,7 @@ input[type='range']::-webkit-slider-runnable-track {
 input[type='range']::-webkit-slider-thumb {
 	background-color: var(--accentColor);
 }
+
 /*Masonry for webcards*/
 
 .masonry {
@@ -127,7 +135,6 @@ input[type='range']::-webkit-slider-thumb {
 }
 
 /* fallback */
-
 @font-face {
 	font-family: 'Material Icons';
 	font-weight: 400;
